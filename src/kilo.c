@@ -39,6 +39,14 @@ void enableRawMode() {
     // IEXTEN turns off CTRL-V.
     // ISIG turns off CTRL-C and CTRL-Z signals.
     raw.c_lflag &= ~(ECHO | ICANON | IEXTEN | ISIG);
+    
+    // VMIN sets the minimum number of bytes of input needed
+    // before read() can return.
+    // VTIME sets the maxium amount of time (tenths of a second)
+    // to wait before read() returns.
+    raw.c_cc[VMIN] = 0;
+    raw.c_cc[VTIME] = 1;
+
     // Set terminal attribute
     tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
 }
@@ -46,7 +54,11 @@ void enableRawMode() {
 int main() {
     enableRawMode();
     char c;
-    while (read(STDIN_FILENO, &c, 1) ==1 && c != 'q') {
+    while (1) {
+        char c = '\0';
+        read(STDIN_FILENO, &c, 1);
+        // Exit if q was pressed
+        if (c == 'q') break;
         // Test if c is a control char (nonprintable)
         if (iscntrl(c)) {
             printf("%d\r\n", c);
