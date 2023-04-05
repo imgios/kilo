@@ -23,6 +23,9 @@ void enableRawMode() {
     // ICRNL fixes the CTRL-M behavior
     raw.c_iflag &= ~(ICRNL | IXON);
 
+    // OPOST disables all output processing features
+    raw.c_oflag &= ~(OPOST);
+
     // ICANON flag allows us to turn off canonical mode
     // and read the input byte-by-byte instead of
     // line-by-line.
