@@ -68,7 +68,9 @@ int main() {
     char c;
     while (1) {
         char c = '\0';
-        read(STDIN_FILENO, &c, 1);
+        if (read(STDIN_FILENO, &c, 1) == -1 && errno != EAGAIN) {
+            die("main::read");
+        }
         // Exit if q was pressed
         if (c == 'q') break;
         // Test if c is a control char (nonprintable)
