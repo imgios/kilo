@@ -20,7 +20,9 @@ void disableRawMode() {
 
 void enableRawMode() {
     // Get terminal attribute and store in orig_termios
-    tcgetattr(STDIN_FILENO, &orig_termios);
+    if (tcgetattr(STDIN_FILENO, &orig_termios) == -1) {
+        die("tcgetattr");
+    }
     // Call disableRawMode automatically whn the program exits
     atexit(disableRawMode);
     
@@ -56,7 +58,9 @@ void enableRawMode() {
     raw.c_cc[VTIME] = 1;
 
     // Set terminal attribute
-    tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
+    if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw) == -1) {
+        die("tcsetattr");
+    }
 }
 
 int main() {
