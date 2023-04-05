@@ -25,8 +25,9 @@ void enableRawMode() {
     // ICANON flag allows us to turn off canonical mode
     // and read the input byte-by-byte instead of
     // line-by-line.
-    // ISIG turn off CTRL-C and CTRL-Z signals.
-    raw.c_lflag &= ~(ECHO | ICANON | ISIG);
+    // IEXTEN turns off CTRL-V.
+    // ISIG turns off CTRL-C and CTRL-Z signals.
+    raw.c_lflag &= ~(ECHO | ICANON | IEXTEN | ISIG);
     // Set terminal attribute
     tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
 }
