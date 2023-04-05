@@ -1,6 +1,9 @@
 # VS Code files
 .vscode
 
+# Compilation output
+kilo
+
 # Prerequisites
 *.d
 
