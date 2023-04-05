@@ -19,12 +19,19 @@ void enableRawMode() {
     // terminal attributes copy before updating them
     struct termios raw = orig_termios;
 
+    // BRKINT turned on lead to a SIGINT signal to be sent to the
+    // program when there's a break condition.
     // IXON turn off CTRL-S and CTRL-Q signals.
-    // ICRNL fixes the CTRL-M behavior
-    raw.c_iflag &= ~(ICRNL | IXON);
+    // ICRNL fixes the CTRL-M behavior.
+    // INPCK enables parity check.
+    // ISTRIP strip the 8th bit of each input byte.
+    raw.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP |IXON);
 
     // OPOST disables all output processing features
     raw.c_oflag &= ~(OPOST);
+
+    // Set the char size to 8 bits per byte
+    raw.c_cflag |= (CS8);
 
     // ICANON flag allows us to turn off canonical mode
     // and read the input byte-by-byte instead of
