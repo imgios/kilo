@@ -19,6 +19,9 @@ void enableRawMode() {
     // terminal attributes copy before updating them
     struct termios raw = orig_termios;
 
+    // IXON turn off CTRL-S and CTRL-Q signals.
+    raw.c_iflag &= ~(IXON);
+
     // ICANON flag allows us to turn off canonical mode
     // and read the input byte-by-byte instead of
     // line-by-line.
