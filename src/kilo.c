@@ -19,10 +19,11 @@ void enableRawMode() {
     // terminal attributes copy before updating them
     struct termios raw = orig_termios;
 
-    // ICANON flag allows us to torun off canonical mode
+    // ICANON flag allows us to turn off canonical mode
     // and read the input byte-by-byte instead of
     // line-by-line.
-    raw.c_lflag &= ~(ECHO | ICANON);
+    // ISIG turn off CTRL-C and CTRL-Z signals.
+    raw.c_lflag &= ~(ECHO | ICANON | ISIG);
     // Set terminal attribute
     tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
 }
