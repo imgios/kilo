@@ -20,7 +20,7 @@ void enableRawMode() {
     struct termios raw = orig_termios;
 
     // IXON turn off CTRL-S and CTRL-Q signals.
-    raw.c_iflag &= ~(IXON);
+    raw.c_iflag &= ~(ICRNL | IXON);
 
     // ICANON flag allows us to turn off canonical mode
     // and read the input byte-by-byte instead of
