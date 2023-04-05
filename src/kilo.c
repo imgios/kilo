@@ -14,14 +14,14 @@ void die(const char *s) {
 
 void disableRawMode() {
     if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &orig_termios) == -1) {
-        die("tcsetattr");
+        die("disableRawMode::tcsetattr");
     }
 }
 
 void enableRawMode() {
     // Get terminal attribute and store in orig_termios
     if (tcgetattr(STDIN_FILENO, &orig_termios) == -1) {
-        die("tcgetattr");
+        die("enableRawMode::tcgetattr");
     }
     // Call disableRawMode automatically whn the program exits
     atexit(disableRawMode);
@@ -59,7 +59,7 @@ void enableRawMode() {
 
     // Set terminal attribute
     if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw) == -1) {
-        die("tcsetattr");
+        die("enableRawMode::tcsetattr");
     }
 }
 
