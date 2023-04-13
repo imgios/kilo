@@ -74,25 +74,24 @@ char editorReadKey() {
             die("editorReadKey::read");
         }
     }
-    
+
     return c;
+}
+
+void editorProcessKeypress() {
+    char c = editorReadKey();
+
+    switch (c) {
+        case CTRL_KEY('q'):
+            exit(0);
+            break;
+    }
 }
 
 int main() {
     enableRawMode();
     while (1) {
-        char c = '\0';
-        if (read(STDIN_FILENO, &c, 1) == -1 && errno != EAGAIN) {
-            die("main::read");
-        }
-        // Exit if q was pressed
-        if (c == CTRL_KEY('q')) break;
-        // Test if c is a control char (nonprintable)
-        if (iscntrl(c)) {
-            printf("%d\r\n", c);
-        } else {
-            printf("%d ('%c')\r\n", c, c);
-        }
+        editorProcessKeypress();
     }
     return 0;
 }
