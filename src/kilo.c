@@ -100,6 +100,14 @@ void editorRefreshScreen() {
     // 1 clear the screen up to where the cursor is
     // 2 clear the entire screen
     write(STDOUT_FILENO, "\x1b[2J", 4);
+
+    // Reposition the cursor at the top-left corner
+    // H command takes two arguments:
+    // row number and column number at which position
+    // the cursor, default values are 1;1.
+    // e.g. 80x24 terminal size and cursor at center
+    // would be \x1b[12;40H
+    write(STDOUT_FILENO, "\x1b[H", 3);
 }
 
 int main() {
