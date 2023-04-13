@@ -66,6 +66,7 @@ void enableRawMode() {
 }
 
 char editorReadKey() {
+    // Wait for one keypress and return it
     int nread;
     char c;
 
@@ -79,8 +80,10 @@ char editorReadKey() {
 }
 
 void editorProcessKeypress() {
+    // Wait for a keypress and then handle it
     char c = editorReadKey();
 
+    // CTRL-Q will be used to quit from editor
     switch (c) {
         case CTRL_KEY('q'):
             exit(0);
