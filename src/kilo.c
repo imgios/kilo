@@ -7,7 +7,11 @@
 
 #define CTRL_KEY(k) ((k) & 0x1f)
 
-struct termios orig_termios;
+struct editorConfig {
+    struct termios orig_termios;
+};
+
+struct editorConfig E;
 
 void die(const char *s) {
     // Clear terminal and reposition the cursor
@@ -19,21 +23,21 @@ void die(const char *s) {
 }
 
 void disableRawMode() {
-    if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &orig_termios) == -1) {
+    if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &E.orig_termios) == -1) {
         die("disableRawMode::tcsetattr");
     }
 }
 
 void enableRawMode() {
     // Get terminal attribute and store in orig_termios
-    if (tcgetattr(STDIN_FILENO, &orig_termios) == -1) {
+    if (tcgetattr(STDIN_FILENO, &E.orig_termios) == -1) {
         die("enableRawMode::tcgetattr");
     }
     // Call disableRawMode automatically whn the program exits
     atexit(disableRawMode);
     
     // terminal attributes copy before updating them
-    struct termios raw = orig_termios;
+    struct termios raw = E.orig_termios;
 
     // BRKINT turned on lead to a SIGINT signal to be sent to the
     // program when there's a break condition.
