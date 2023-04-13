@@ -98,6 +98,16 @@ void editorProcessKeypress() {
     }
 }
 
+void editorDrawRows() {
+    // Draw a column of tildes on the left hand side
+    // of the screen, like vim does.
+    int y;
+
+    for (y = 0; y < 24; y++) {
+        write(STDOUT_FILENO, "~\r\n", 3);
+    }
+}
+
 void editorRefreshScreen() {
     // 4 means we are writing 4 bytes
     // \x1b is the escape character followed by [
@@ -114,6 +124,12 @@ void editorRefreshScreen() {
     // the cursor, default values are 1;1.
     // e.g. 80x24 terminal size and cursor at center
     // would be \x1b[12;40H
+    write(STDOUT_FILENO, "\x1b[H", 3);
+
+    // Start drawing the "GUI"
+    editorDrawRows();
+
+    // Reposition the cursor at the top-left corner
     write(STDOUT_FILENO, "\x1b[H", 3);
 }
 
