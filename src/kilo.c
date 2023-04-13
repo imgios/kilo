@@ -4,11 +4,14 @@
 #include <termios.h>
 #include <unistd.h>
 #include <errno.h>
+#include <sys/ioctl.h>
 
 #define CTRL_KEY(k) ((k) & 0x1f)
 
 struct editorConfig {
     struct termios orig_termios;
+    int screenrows;
+    int screencols;
 };
 
 struct editorConfig E;
@@ -70,6 +73,18 @@ void enableRawMode() {
     // Set terminal attribute
     if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw) == -1) {
         die("enableRawMode::tcsetattr");
+    }
+}
+
+int getWindowSize(int *rows, int *cols) {
+    struct winsize size;
+
+    if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &size) == -1 || size.ws_col == 0) {
+        return -1;
+    } else {
+        *cols = size.ws_col;
+        *rows = size.ws_row;
+        return 0;
     }
 }
 
@@ -137,8 +152,16 @@ void editorRefreshScreen() {
     write(STDOUT_FILENO, "\x1b[H", 3);
 }
 
+void initEditor() {
+    if (getWindowSize(&E.screenrows, &E.screencols) == -1) {
+        die("init::getWindowSize");
+    }
+}
+
 int main() {
     enableRawMode();
+    initEditor();
+    
     while (1) {
         editorRefreshScreen();
         editorProcessKeypress();
