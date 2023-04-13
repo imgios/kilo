@@ -65,6 +65,19 @@ void enableRawMode() {
     }
 }
 
+char editorReadKey() {
+    int nread;
+    char c;
+
+    while ((nread = read(STDIN_FILENO, &c, 1)) != 1) {
+        if (nread == -1 && errno != EAGAIN) {
+            die("editorReadKey::read");
+        }
+    }
+    
+    return c;
+}
+
 int main() {
     enableRawMode();
     while (1) {
