@@ -5,6 +5,8 @@
 #include <unistd.h>
 #include <errno.h>
 
+#define CTRL_KEY(k) ((k) & 0x1f)
+
 struct termios orig_termios;
 
 void die(const char *s) {
@@ -71,7 +73,7 @@ int main() {
             die("main::read");
         }
         // Exit if q was pressed
-        if (c == 'q') break;
+        if (c == CTRL_KEY('q')) break;
         // Test if c is a control char (nonprintable)
         if (iscntrl(c)) {
             printf("%d\r\n", c);
