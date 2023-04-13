@@ -153,6 +153,8 @@ void editorRefreshScreen() {
 }
 
 void initEditor() {
+    // This function initialize all the fields of our
+    // editor configuration variable E.
     if (getWindowSize(&E.screenrows, &E.screencols) == -1) {
         die("init::getWindowSize");
     }
@@ -161,7 +163,7 @@ void initEditor() {
 int main() {
     enableRawMode();
     initEditor();
-    
+
     while (1) {
         editorRefreshScreen();
         editorProcessKeypress();
