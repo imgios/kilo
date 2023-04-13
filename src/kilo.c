@@ -91,9 +91,21 @@ void editorProcessKeypress() {
     }
 }
 
+void editorRefreshScreen() {
+    // 4 means we are writing 4 bytes
+    // \x1b is the escape character followed by [
+    // the J command is used to clear the screen:
+    // 0 clear the screen from the cursor up to
+    // the end of the screen
+    // 1 clear the screen up to where the cursor is
+    // 2 clear the entire screen
+    write(STDOUT_FILENO, "\x1b[2J", 4);
+}
+
 int main() {
     enableRawMode();
     while (1) {
+        editorRefreshScreen();
         editorProcessKeypress();
     }
     return 0;
