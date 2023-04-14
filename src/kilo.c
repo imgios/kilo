@@ -269,10 +269,6 @@ void editorRefreshScreen() {
     snprintf(buffer, sizeof(buffer), "\x1b[%d;%dH", E.cy + 1, E.cx + 1);
     abAppend(&ab, buffer, strlen(buffer));
 
-    // Reposition the cursor at the top-left corner
-    // write(STDOUT_FILENO, "\x1b[H", 3);
-    abAppend(&ab, "\x1b[H", 3);
-
     // Show the cursor again
     abAppend(&ab, "\x1b[?25h", 6);
 
