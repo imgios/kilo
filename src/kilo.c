@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <sys/ioctl.h>
+#include <string.h>
 
 #define CTRL_KEY(k) ((k) & 0x1f)
 
@@ -15,6 +16,32 @@ struct editorConfig {
 };
 
 struct editorConfig E;
+
+struct abuf {
+    char *b;
+    int len;
+};
+
+// Represents an empty buffer and acts as constructor
+#define ABUF_INIT {NULL, 0}
+
+void abAppend(struct abuf *ab, const char *s, int len) {
+    // Allocate enough memory to hold the previous string
+    // plus the new one.
+    char *new = realloc(ab->b, ab->len + len);
+
+    if (new == NULL) {
+        return;
+    }
+    memcpy(&new[ab->len], s, len);
+    ab->b = new;
+    ab->len += len;
+}
+
+void abFree(struct abuf *ab) {
+    // Release memory
+    free(ab->b);
+}
 
 void die(const char *s) {
     // Clear terminal and reposition the cursor
