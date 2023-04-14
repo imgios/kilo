@@ -14,6 +14,7 @@ struct editorConfig {
     struct termios orig_termios;
     int screenrows;
     int screencols;
+    int cx, cy; // cursor position
 };
 
 struct editorConfig E;
@@ -240,6 +241,11 @@ void editorRefreshScreen() {
     // Start drawing the "GUI"
     editorDrawRows(&ab);
 
+    // Move the cursor to the position stored in E.cx / E.cy
+    char buffer[32];
+    snprintf(buffer, sizeof(buffer), "\x1b[%d,%dH", E.cy + 1, E.cx + 1);
+    abAppend(&ab, buffer, strlen(buffer));
+
     // Reposition the cursor at the top-left corner
     // write(STDOUT_FILENO, "\x1b[H", 3);
     abAppend(&ab, "\x1b[H", 3);
@@ -254,6 +260,9 @@ void editorRefreshScreen() {
 void initEditor() {
     // This function initialize all the fields of our
     // editor configuration variable E.
+    E.cx = 0;
+    E.cy = 0;
+
     if (getWindowSize(&E.screenrows, &E.screencols) == -1) {
         die("init::getWindowSize");
     }
