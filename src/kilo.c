@@ -110,7 +110,7 @@ int getCursorPosition(int *rows, int *cols) {
 int getWindowSize(int *rows, int *cols) {
     struct winsize size;
 
-    if (1 || ioctl(STDOUT_FILENO, TIOCGWINSZ, &size) == -1 || size.ws_col == 0) {
+    if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &size) == -1 || size.ws_col == 0) {
         // Move the cursor to the right (using C command)
         // and then down (using B command).
         if (write(STDOUT_FILENO, "\x1b[999C\x1b[999B", 12) != 12) {
