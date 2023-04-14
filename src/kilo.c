@@ -197,6 +197,9 @@ void editorDrawRows(struct abuf *ab) {
 void editorRefreshScreen() {
     struct abuf ab = ABUF_INIT;
 
+    // Hide cursor before refreshing the screen
+    abAppend(&ab, "\x1b[?25l", 6);
+
     // 4 means we are writing 4 bytes
     // \x1b is the escape character followed by [
     // the J command is used to clear the screen:
@@ -222,6 +225,9 @@ void editorRefreshScreen() {
     // Reposition the cursor at the top-left corner
     // write(STDOUT_FILENO, "\x1b[H", 3);
     abAppend(&ab, "\x1b[H", 3);
+
+    // Show the cursor again
+    abAppend(&ab, "\x1b[?25h", 6);
 
     write(STDOUT_FILENO, ab.b, ab.len);
     abFree(&ab);
