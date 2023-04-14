@@ -266,7 +266,7 @@ void editorRefreshScreen() {
 
     // Move the cursor to the position stored in E.cx / E.cy
     char buffer[32];
-    snprintf(buffer, sizeof(buffer), "\x1b[%d,%dH", E.cy + 1, E.cx + 1);
+    snprintf(buffer, sizeof(buffer), "\x1b[%d;%dH", E.cy + 1, E.cx + 1);
     abAppend(&ab, buffer, strlen(buffer));
 
     // Reposition the cursor at the top-left corner
