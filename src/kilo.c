@@ -76,11 +76,47 @@ void enableRawMode() {
     }
 }
 
+int getCursorPosition(int *rows, int *cols) {
+    char buffer[32];
+    unsigned int i = 0;
+
+    if (write(STDOUT_FILENO, "\x1b[6n", 4) != 4) {
+        return -1;
+    }
+
+    while (i < sizeof(buffer) - 1) {
+        if (read(STDIN_FILENO, &buffer[i], 1) != 1) {
+            break;
+        }
+        if (buffer[i] == 'R') {
+            break;
+        }
+        i++;
+    }
+
+    buffer[i] = '\0'; // string end
+    
+    if (buffer[0] != '\x1b' || buffer[1] != '[') {
+        return -1;
+    }
+
+    if (sscanf(&buffer[2], "%d;%d", rows, cols) != 2) {
+        return -1;
+    }
+
+    return 0;
+}
+
 int getWindowSize(int *rows, int *cols) {
     struct winsize size;
 
-    if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &size) == -1 || size.ws_col == 0) {
-        return -1;
+    if (1 || ioctl(STDOUT_FILENO, TIOCGWINSZ, &size) == -1 || size.ws_col == 0) {
+        // Move the cursor to the right (using C command)
+        // and then down (using B command).
+        if (write(STDOUT_FILENO, "\x1b[999C\x1b[999B", 12) != 12) {
+            return -1;
+        }
+        return getCursorPosition(rows, cols);
     } else {
         *cols = size.ws_col;
         *rows = size.ws_row;
