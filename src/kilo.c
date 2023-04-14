@@ -187,7 +187,7 @@ void editorDrawRows(struct abuf *ab) {
 
     for (y = 0; y < E.screenrows; y++) {
         abAppend(ab, "~", 1);
-
+        abAppend(ab, "\x1b[K", 3);
         if (y < E.screenrows - 1) {
             abAppend(ab, "\r\n", 2);
         }
@@ -208,7 +208,7 @@ void editorRefreshScreen() {
     // 1 clear the screen up to where the cursor is
     // 2 clear the entire screen
     // write(STDOUT_FILENO, "\x1b[2J", 4);
-    abAppend(&ab, "\x1b[2J", 4);
+    // abAppend(&ab, "\x1b[2J", 4);
 
     // Reposition the cursor at the top-left corner
     // H command takes two arguments:
