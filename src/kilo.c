@@ -180,21 +180,23 @@ void editorProcessKeypress() {
     }
 }
 
-void editorDrawRows() {
+void editorDrawRows(struct abuf *ab) {
     // Draw a column of tildes on the left hand side
     // of the screen, like vim does.
     int y;
 
     for (y = 0; y < E.screenrows; y++) {
-        write(STDOUT_FILENO, "~", 1);
+        abAppend(ab, "~", 1);
 
         if (y < E.screenrows - 1) {
-            write(STDOUT_FILENO, "\r\n", 2);
+            abAppend(ab, "\r\n", 2);
         }
     }
 }
 
 void editorRefreshScreen() {
+    struct abuf ab = ABUF_INIT;
+
     // 4 means we are writing 4 bytes
     // \x1b is the escape character followed by [
     // the J command is used to clear the screen:
@@ -202,7 +204,8 @@ void editorRefreshScreen() {
     // the end of the screen
     // 1 clear the screen up to where the cursor is
     // 2 clear the entire screen
-    write(STDOUT_FILENO, "\x1b[2J", 4);
+    // write(STDOUT_FILENO, "\x1b[2J", 4);
+    abAppend(&ab, "\x1b[2J", 4);
 
     // Reposition the cursor at the top-left corner
     // H command takes two arguments:
@@ -210,13 +213,18 @@ void editorRefreshScreen() {
     // the cursor, default values are 1;1.
     // e.g. 80x24 terminal size and cursor at center
     // would be \x1b[12;40H
-    write(STDOUT_FILENO, "\x1b[H", 3);
+    // write(STDOUT_FILENO, "\x1b[H", 3);
+    abAppend(&ab, "\x1b[H", 3);
 
     // Start drawing the "GUI"
-    editorDrawRows();
+    editorDrawRows(&ab);
 
     // Reposition the cursor at the top-left corner
-    write(STDOUT_FILENO, "\x1b[H", 3);
+    // write(STDOUT_FILENO, "\x1b[H", 3);
+    abAppend(&ab, "\x1b[H", 3);
+
+    write(STDOUT_FILENO, ab.b, ab.len);
+    abFree(&ab);
 }
 
 void initEditor() {
