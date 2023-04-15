@@ -24,11 +24,19 @@ enum editorKey {
     PAGE_DOWN,
 };
 
+// Data type to store a row of text in our editor
+typedef struct erow {
+    int size;
+    char *chars;
+} erow;
+
 struct editorConfig {
     struct termios orig_termios;
     int screenrows;
     int screencols;
     int cx, cy; // cursor position
+    int numrows;
+    erow row;
 };
 
 struct editorConfig E;
@@ -371,6 +379,7 @@ void initEditor() {
     // editor configuration variable E.
     E.cx = 0;
     E.cy = 0;
+    E.numrows = 0;
 
     if (getWindowSize(&E.screenrows, &E.screencols) == -1) {
         die("init::getWindowSize");
