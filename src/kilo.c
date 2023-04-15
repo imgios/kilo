@@ -17,7 +17,7 @@ enum editorKey {
     ARROW_RIGHT, // 1001
     ARROW_UP, // 1002
     ARROW_DOWN, // 1003
-}
+};
 
 struct editorConfig {
     struct termios orig_termios;
