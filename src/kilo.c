@@ -432,7 +432,7 @@ void editorRefreshScreen() {
 
     // Move the cursor to the position stored in E.cx / E.cy
     char buffer[32];
-    snprintf(buffer, sizeof(buffer), "\x1b[%d;%dH", (E.cy - E.rowoff) + 1, E.cx + 1);
+    snprintf(buffer, sizeof(buffer), "\x1b[%d;%dH", (E.cy - E.rowoff) + 1, (E.cx - E.coloff) + 1);
     abAppend(&ab, buffer, strlen(buffer));
 
     // Show the cursor again
