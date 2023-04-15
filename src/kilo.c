@@ -41,8 +41,9 @@ struct editorConfig {
     int screencols;
     int cx, cy; // cursor position
     int numrows;
-    // row offset to keep track of what row the user is currently scrolled to
+    // row/col offset to keep track of what row the user is currently scrolled to
     int rowoff;
+    int coloff;
     erow *row;
 };
 
@@ -285,9 +286,7 @@ void editorMoveCursor(int key) {
             }
             break;
         case ARROW_RIGHT:
-            if (E.cx != E.screencols -1) {
-                E.cx++;
-            }
+            E.cx++;
             break;
         case ARROW_DOWN:
             if (E.cy < E.numrows) {
@@ -348,6 +347,12 @@ void editorScroll() {
     if (E.cy >= E.rowoff + E.screenrows) {
         E.rowoff = E.cy - E.screenrows + 1;
     }
+    if (E.cx < E.coloff) {
+        E.coloff = E.cx;
+    }
+    if (E.cx >= E.coloff + E.screencols) {
+        E.coloff = E.cx - E.screencols + 1;
+    }
 }
 
 void editorDrawRows(struct abuf *ab) {
@@ -378,11 +383,14 @@ void editorDrawRows(struct abuf *ab) {
                 abAppend(ab, "~", 1);
             }
         } else {
-            int len = E.row[filerow].size;
+            int len = E.row[filerow].size - E.coloff;
+            if (len < 0) {
+                len = 0;
+            }
             if (len > E.screencols) {
                 len = E.screencols;
             }
-            abAppend(ab, E.row[filerow].chars, len);
+            abAppend(ab, &E.row[filerow].chars[E.coloff], len);
         }
 
         abAppend(ab, "\x1b[K", 3);
@@ -442,6 +450,7 @@ void initEditor() {
     E.numrows = 0;
     E.row = NULL;
     E.rowoff = 0;
+    E.coloff = 0;
 
     if (getWindowSize(&E.screenrows, &E.screencols) == -1) {
         die("init::getWindowSize");
