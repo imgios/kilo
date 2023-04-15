@@ -395,7 +395,7 @@ void editorProcessKeypress() {
             // inside a switch statement
             {
                 if (c == PAGE_UP) {
-                    E.cy == E.rowoff;
+                    E.cy = E.rowoff;
                 } else if (c == PAGE_DOWN) {
                     E.cy = E.rowoff + E.screenrows - 1;
                     if (E.cy > E.numrows) {
