@@ -10,11 +10,13 @@
 #define VERSION "0.0.1"
 #define CTRL_KEY(k) ((k) & 0x1f)
 
+// By setting the first const to 1000, the rest
+// get incrementing values of 1001/1002/1003 and so on.
 enum editorKey {
-    ARROW_LEFT = 'a',
-    ARROW_RIGHT = 'd',
-    ARROW_UP = 'w',
-    ARROW_DOWN = 's',
+    ARROW_LEFT = 1000,
+    ARROW_RIGHT, // 1001
+    ARROW_UP, // 1002
+    ARROW_DOWN, // 1003
 }
 
 struct editorConfig {
@@ -160,7 +162,7 @@ int getWindowSize(int *rows, int *cols) {
     }
 }
 
-char editorReadKey() {
+int editorReadKey() {
     // Wait for one keypress and return it
     int nread;
     char c;
@@ -195,7 +197,7 @@ char editorReadKey() {
     }
 }
 
-void editorMoveCursor(char key) {
+void editorMoveCursor(int key) {
     switch (key) {
         case ARROW_LEFT:
             E.cx--;
@@ -214,7 +216,7 @@ void editorMoveCursor(char key) {
 
 void editorProcessKeypress() {
     // Wait for a keypress and then handle it
-    char c = editorReadKey();
+    int c = editorReadKey();
 
     // CTRL-Q will be used to quit from editor
     switch (c) {
