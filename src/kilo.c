@@ -198,7 +198,6 @@ void editorUpdateRow(erow *row) {
     free(row->render);
     row->render = malloc(row->size + tabs*(TAB_STOP - 1) + 1);
 
-    int j;
     int idx = 0;
     for (j = 0; j < row->size; j++) {
         if (row->chars[j] == '\t') {
