@@ -17,6 +17,8 @@ enum editorKey {
     ARROW_RIGHT, // 1001
     ARROW_UP, // 1002
     ARROW_DOWN, // 1003
+    PAGE_UP, // 1004
+    PAGE_DOWN, // 1005
 };
 
 struct editorConfig {
@@ -183,11 +185,25 @@ int editorReadKey() {
             return '\x1b';
         }
         if (seq[0] == '[') {
-            switch (seq[1]) {
-                case 'A': return ARROW_UP;
-                case 'B': return ARROW_DOWN;
-                case 'C': return ARROW_RIGHT;
-                case 'D': return ARROW_LEFT;
+            if (seq[1] >= '0' && seq[1] <= '9') {
+                if (read(STDIN_FILENO, &seq[2], 1) != 1) {
+                    return '\x1b';
+                }
+                // PAGE UP is sent as <esc>[5~
+                // PAGE DOWN is sent as <esc>[6~
+                if (seq[2] == '~') {
+                    switch (seq[1]) {
+                        case '5': return PAGE_UP;
+                        case '6': return PAGE_DOWN;
+                    }
+                }
+            } else {
+                switch (seq[1]) {
+                    case 'A': return ARROW_UP;
+                    case 'B': return ARROW_DOWN;
+                    case 'C': return ARROW_RIGHT;
+                    case 'D': return ARROW_LEFT;
+                }
             }
         }
         
@@ -233,6 +249,18 @@ void editorProcessKeypress() {
             write(STDOUT_FILENO, "\x1b[2J", 4);
             write(STDOUT_FILENO, "\x1b[H", 3);
             exit(0);
+            break;
+        case PAGE_UP:
+        case PAGE_DOWN:
+            // Code block required to declare the times variable
+            // otherwise we ain't able to delcare variables
+            // inside a switch statement
+            {
+                int times = E.screenrows;
+                while (times--) {
+                    editorMoveCursor(c == PAGE_UP ? ARROW_UP : ARROW_DOWN);
+                }
+            }
             break;
         case ARROW_UP:
         case ARROW_DOWN:
