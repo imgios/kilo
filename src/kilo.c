@@ -540,6 +540,7 @@ void editorRefreshScreen() {
 
     // Start drawing the "GUI"
     editorDrawRows(&ab);
+    editorDrawStatusBar(&ab);
 
     // Move the cursor to the position stored in E.cx / E.cy
     char buffer[32];
