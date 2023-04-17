@@ -11,6 +11,8 @@
 #include <sys/ioctl.h>
 #include <sys/types.h>
 #include <string.h>
+#include <time.h>
+#include <stdarg.h>
 
 #define VERSION "0.0.1"
 #define TAB_STOP 8
@@ -50,6 +52,8 @@ struct editorConfig {
     int coloff;
     erow *row;
     char *filename;
+    char statusmsg[80]; // Status message
+    time_t statusmsg_time; // Timestamp when status message was set
 };
 
 struct editorConfig E;
@@ -509,6 +513,22 @@ void editorDrawStatusBar(struct abuf *ab) {
 
     // Switch back to normal formatting
     abAppend(ab, "\x1b[m", 3);
+    // Make room for the status message
+    abAppend(ab, "\r\n", 2);
+}
+
+void editorDrawMessageBar(struct abuf *ab) {
+    // <esc>[K clear the message bar
+    abAppend(ab, "\x1b[K", 3);
+    
+    int msglen = strlen(E.statusmsg);
+    if (msglen > E.screencols) {
+        msglen = E.screencols;
+    }
+    // Show the message only if it's less than 5 seconds old
+    if (msglen && time(NULL) - E.statusmsg_time < 5) {
+        abAppend(ab, E.statusmsg, msglen);
+    }
 }
 
 void editorRefreshScreen() {
@@ -541,6 +561,7 @@ void editorRefreshScreen() {
     // Start drawing the "GUI"
     editorDrawRows(&ab);
     editorDrawStatusBar(&ab);
+    editorDrawMessageBar(&ab);
 
     // Move the cursor to the position stored in E.cx / E.cy
     char buffer[32];
@@ -554,6 +575,27 @@ void editorRefreshScreen() {
     abFree(&ab);
 }
 
+void editorSetStatusMessage(const char *fmt, ...) {
+    // "..." makes it a variadic function, meaning it can take
+    // any number of arguments. To handle those arguments in C
+    // we can use va_start() and va_end() on a value of type va_list.
+    // The last argument before the three dots (fmt in our case) must
+    // be passed to va_start(). Between va_start() and va_end(), we
+    // should call va_arg() and pass it the type of the next argument
+    // and it would return the value of that argument.
+    // In our case, we pass fmt and ap to vsnprintf(), it takes care
+    // of reading the format string and calling va_arg() to get each
+    // argument.
+
+    va_list ap;
+    va_start(ap, fmt);
+    vsnprintf(E.statusmsg, sizeof(E.statusmsg), fmt, ap);
+    va_end(ap);
+
+    // Get current time
+    E.statusmsg_time = time(NULL);
+}
+
 void initEditor() {
     // This function initialize all the fields of our
     // editor configuration variable E.
@@ -565,12 +607,15 @@ void initEditor() {
     E.rowoff = 0;
     E.coloff = 0;
     E.filename = NULL;
+    E.statusmsg[0] = '\0';
+    E.statusmsg_time = 0;
 
     if (getWindowSize(&E.screenrows, &E.screencols) == -1) {
         die("init::getWindowSize");
     }
-    // We leave a line for the status bar
-    E.screenrows -= 1;
+    // We leave a line for the status bar and one for the
+    // status message.
+    E.screenrows -= 2;
 }
 
 int main(int argc, char *argv[]) {
@@ -580,6 +625,8 @@ int main(int argc, char *argv[]) {
     if (argc >= 2) {
         editorOpen(argv[1]);
     }
+
+    editorSetStatusMessage("HELP: Ctrl-Q = Quit");
 
     while (1) {
         editorRefreshScreen();
