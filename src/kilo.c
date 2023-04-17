@@ -477,10 +477,22 @@ void editorDrawRows(struct abuf *ab) {
         }
 
         abAppend(ab, "\x1b[K", 3);
-        if (y < E.screenrows - 1) {
-            abAppend(ab, "\r\n", 2);
-        }
+        abAppend(ab, "\r\n", 2);
     }
+}
+
+void editorDrawStatusBar(struct abuf *ab) {
+    // Switch to inverted colors: \x1b[7m
+    abAppend(ab, "\x1b[7m", 4);
+
+    int len = 0;
+    while (len < E.screencols) {
+        abAppend(ab, " ", 1);
+        len++;
+    }
+
+    // Switch back to normal formatting
+    abAppend(ab, "\x1b[m", 3);
 }
 
 void editorRefreshScreen() {
@@ -539,6 +551,8 @@ void initEditor() {
     if (getWindowSize(&E.screenrows, &E.screencols) == -1) {
         die("init::getWindowSize");
     }
+    // We leave a line for the status bar
+    E.screenrows -= 1;
 }
 
 int main(int argc, char *argv[]) {
