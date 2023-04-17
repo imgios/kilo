@@ -13,6 +13,7 @@
 #include <string.h>
 #include <time.h>
 #include <stdarg.h>
+#include <fcntl.h>
 
 #define VERSION "0.0.1"
 #define TAB_STOP 8
@@ -319,6 +320,21 @@ void editorOpen(char *filename) {
 
     free(line);
     fclose(fp);
+}
+
+void editorSave() {
+    if (E.filename == NULL) {
+        return;
+    }
+
+    int len;
+    char *buf = editorRowsToString(&len);
+
+    int fd = open(E.filename, O_RDWR | O_CREAT, 0644);
+    ftruncate(fd, len);
+    write(fd, buf, len);
+    close(fd);
+    free(buf);
 }
 
 int editorReadKey() {
