@@ -445,12 +445,16 @@ void editorProcessKeypress() {
     int c = editorReadKey();
 
     // CTRL-Q will be used to quit from editor
+    // CTRL-S will be used to save the file
     switch (c) {
         case CTRL_KEY('q'):
             // Clear terminal and reposition the cursor
             write(STDOUT_FILENO, "\x1b[2J", 4);
             write(STDOUT_FILENO, "\x1b[H", 3);
             exit(0);
+            break;
+        case CTRL_KEY('s'):
+            editorSave();
             break;
         case '\r': // Enter key
             // TO-DO
