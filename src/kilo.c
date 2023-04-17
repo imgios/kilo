@@ -21,6 +21,7 @@
 // By setting the first const to 1000, the rest
 // get incrementing values of 1001/1002/1003 and so on.
 enum editorKey {
+    BACKSPACE = 127,
     ARROW_LEFT = 1000,
     ARROW_RIGHT,
     ARROW_UP,
@@ -409,6 +410,9 @@ void editorProcessKeypress() {
             write(STDOUT_FILENO, "\x1b[H", 3);
             exit(0);
             break;
+        case '\r': // Enter key
+            // TO-DO
+            break;
         case HOME_KEY:
             E.cx = 0;
             break;
@@ -416,6 +420,11 @@ void editorProcessKeypress() {
             if (E.cy < E.numrows) {
                 E.cx = E.row[E.cy].size;
             }
+            break;
+        case BACKSPACE:
+        case CTRL_KEY('h'):
+        case DEL_KEY:
+            // TODO
             break;
         case PAGE_UP:
         case PAGE_DOWN:
@@ -443,6 +452,9 @@ void editorProcessKeypress() {
         case ARROW_LEFT:
         case ARROW_RIGHT:
             editorMoveCursor(c);
+            break;
+        case CTRL_KEY('l'):
+        case '\x1b':
             break;
         default:
             editorInsertChar(c);
