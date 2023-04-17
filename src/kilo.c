@@ -272,6 +272,32 @@ void editorInsertChar(int c) {
     E.cx++;
 }
 
+char * editorRowsToString(int *buflen) {
+    // This functions convers an array of erow structs into
+    // a single string.
+
+    int totlen = 0;
+    int j;
+    for (j = 0; j < E.numrows; j++) {
+        // Length of each row of text + 1 for the newline char.
+        totlen += E.row[j].size + 1;
+    }
+    *buflen = totlen;
+    
+    char *buf = malloc(totlen);
+    char *p = buf;
+    for (j = 0; j < E.numrows; j++) {
+        // Copy the content of each row to the end of the buffer
+        // and then append a newline char.
+        memcpy(p, E.row[j].chars, E.row[j].size);
+        p += E.row[j].size;
+        *p = '\n';
+        p++;
+    }
+
+    return buf;
+}
+
 void editorOpen(char *filename) {
     free(E.filename);
     E.filename = strdup(filename);
