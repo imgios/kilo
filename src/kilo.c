@@ -53,6 +53,8 @@ struct editorConfig {
     int rowoff;
     int coloff;
     erow *row;
+    // dirty will tell us if the file has been modified since opening or saving
+    int dirty;
     char *filename;
     char statusmsg[80]; // Status message
     time_t statusmsg_time; // Timestamp when status message was set
@@ -588,7 +590,7 @@ void editorDrawStatusBar(struct abuf *ab) {
     // Switch to inverted colors: \x1b[7m
     abAppend(ab, "\x1b[7m", 4);
     char status[80], rstatus[80];
-    int len = snprintf(status, sizeof(status), "%.20s - %d lines", E.filename ? E.filename : "[No Name]", E.numrows);
+    int len = snprintf(status, sizeof(status), "%.20s - %d lines", E.filename ? E.filename : "[No Name]", E.numrows, E.dirty ? "(modified)" : "");
     // Line number
     int rlen = snprintf(rstatus, sizeof(rstatus), "%d/%d", E.cy +1, E.numrows);
     // Cut string if longer than screen size
@@ -701,6 +703,7 @@ void initEditor() {
     E.row = NULL;
     E.rowoff = 0;
     E.coloff = 0;
+    E.dirty = 0;
     E.filename = NULL;
     E.statusmsg[0] = '\0';
     E.statusmsg_time = 0;
