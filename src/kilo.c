@@ -291,6 +291,19 @@ void editorInsertChar(int c) {
     E.cx++;
 }
 
+void editorDelChar() {
+    // Cursor past the end of the file
+    if (E.cy == E.numrows) {
+        return;
+    }
+
+    erow *row = &E.row[E.cy];
+    if (E.cx > 0) {
+        editorRowDelChar(row, E.cx - 1);
+        E.cx--;
+    }
+}
+
 char * editorRowsToString(int *buflen) {
     // This functions convers an array of erow structs into
     // a single string.
