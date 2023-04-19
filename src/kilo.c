@@ -68,6 +68,9 @@ struct abuf {
 // Represents an empty buffer and acts as constructor
 #define ABUF_INIT {NULL, 0}
 
+// Prototypes
+void editorSetStatusMessage(const char *fmt, ...);
+
 void abAppend(struct abuf *ab, const char *s, int len) {
     // Allocate enough memory to hold the previous string
     // plus the new one.
