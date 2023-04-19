@@ -718,7 +718,7 @@ int main(int argc, char *argv[]) {
         editorOpen(argv[1]);
     }
 
-    editorSetStatusMessage("HELP: Ctrl-Q = Quit");
+    editorSetStatusMessage("HELP: Ctrl-Q = Quit :: Ctrl-S = Save");
 
     while (1) {
         editorRefreshScreen();
