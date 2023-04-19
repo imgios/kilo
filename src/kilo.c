@@ -17,6 +17,7 @@
 
 #define VERSION "0.0.1"
 #define TAB_STOP 8
+#define QUIT_TIMES 3 // # of times required to quit without saving
 #define CTRL_KEY(k) ((k) & 0x1f)
 
 // By setting the first const to 1000, the rest
@@ -460,6 +461,8 @@ void editorMoveCursor(int key) {
 }
 
 void editorProcessKeypress() {
+    static int quit_times = QUIT_TIMES;
+
     // Wait for a keypress and then handle it
     int c = editorReadKey();
 
@@ -467,6 +470,11 @@ void editorProcessKeypress() {
     // CTRL-S will be used to save the file
     switch (c) {
         case CTRL_KEY('q'):
+            if (E.dirty && quit_times > 0) {
+                editorSetStatusMessage("WARNING: file has unsaved changes. Press Ctrl-Q %d more times to quit.", quit_times);
+                quit_times--;
+                return;
+            }
             // Clear terminal and reposition the cursor
             write(STDOUT_FILENO, "\x1b[2J", 4);
             write(STDOUT_FILENO, "\x1b[H", 3);
@@ -525,6 +533,8 @@ void editorProcessKeypress() {
             editorInsertChar(c);
             break;
     }
+
+    quit_times = QUIT_TIMES;
 }
 
 void editorScroll() {
