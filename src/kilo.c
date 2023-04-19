@@ -274,6 +274,16 @@ void editorDelRow(int at) {
     E.dirty++;
 }
 
+void editorRowAppendString(erow *row, char *s, size_t len) {
+    // Append a string to the end of the row
+    row->chars = realloc(row->chars, row->size + len + 1);
+    memcpy(&row->chars[row->size], s, len);
+    row->size += len;
+    row->chars[row->size] = '\0';
+    editorUpdateRow(row);
+    E.dirty++;
+}
+
 void editorRowInsertChar(erow *row, int at, int c) {
     if (at < 0 || at > row->size) {
         at = row->size;
