@@ -74,6 +74,7 @@ struct abuf {
 // Prototypes
 void editorSetStatusMessage(const char *fmt, ...);
 void editorRefreshScreen();
+char *editorPrompt(char *prompt);
 
 void abAppend(struct abuf *ab, const char *s, int len) {
     // Allocate enough memory to hold the previous string
@@ -410,7 +411,11 @@ void editorOpen(char *filename) {
 
 void editorSave() {
     if (E.filename == NULL) {
-        return;
+        E.filename = editorPrompt("Save as: %s (ESC to cancel)");
+        if (E.filename == NULL) {
+            editorSetStatusMessage("Save aborted!");
+            return;
+        }
     }
 
     int len;
@@ -510,12 +515,20 @@ char *editorPrompt(char *prompt) {
         editorRefreshScreen();
 
         int c = editorReadKey();
-        if (c == '\r') {
+        if (c == DEL_KEY || c == CTRL_KEY('h') || c == BACKSPACE) { // Backspace/Del
+            if (buflen != 0) {
+                buf[--buflen] = '\0';
+            }
+        } else if (c == '\x1b') { // ESC Key
+            editorSetStatusMessage("");
+            free(buf);
+            return NULL;
+        } else if (c == '\r') { // Enter Key
             if (buflen != 0) {
                 editorSetStatusMessage("");
                 return buf;
             }
-        } else if (!iscntrl(c) && c < 128) {
+        } else if (!iscntrl(c) && c < 128) { // CTRL
             if (buflen == bufsize - 1) {
                 bufsize *= 2;
                 buf = realloc(buf, bufsize);
