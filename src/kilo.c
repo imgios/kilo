@@ -560,7 +560,7 @@ void editorProcessKeypress() {
             editorSave();
             break;
         case '\r': // Enter key
-            // TO-DO
+            editorInsertNewline();
             break;
         case HOME_KEY:
             E.cx = 0;
