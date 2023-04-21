@@ -575,8 +575,8 @@ void editorProcessKeypress() {
         case DEL_KEY:
             if (c == DEL_KEY) {
                 editorMoveCursor(ARROW_RIGHT);
-                editorDelChar();
             }
+            editorDelChar();
             break;
         case PAGE_UP:
         case PAGE_DOWN:
