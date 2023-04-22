@@ -639,6 +639,9 @@ void editorProcessKeypress() {
         case CTRL_KEY('s'):
             editorSave();
             break;
+        case CTRL_KEY('f'):
+            editorFind();
+            break;
         case '\r': // Enter key
             editorInsertNewline();
             break;
@@ -899,7 +902,7 @@ int main(int argc, char *argv[]) {
         editorOpen(argv[1]);
     }
 
-    editorSetStatusMessage("HELP: Ctrl-Q = Quit :: Ctrl-S = Save");
+    editorSetStatusMessage("Ctrl-Q = Quit :: Ctrl-S = Save :: Ctrl-F = Find");
 
     while (1) {
         editorRefreshScreen();
