@@ -439,6 +439,28 @@ void editorSave() {
     editorSetStatusMessage("Can't save! I/O error: %s", strerror(errno));
 }
 
+void editorFind() {
+    char *query = editorPrompt("Search: %s (ESC to cancel)");
+    if (query == NULL) { // Search aborted
+        return;
+    }
+
+    int i;
+    for (i = 0; i < E.numrows; i++) {
+        erow *row = &E.row[i];
+        // Check if query is a substring of the current row
+        char *match = strstr(row->render, query);
+        if (match) { // Query found
+            E.cy = i;
+            E.cx = match - row->render;
+            E.rowoff = E.numrows;
+            break;
+        }
+    }
+
+    free(query);
+}
+
 int editorReadKey() {
     // Wait for one keypress and return it
     int nread;
