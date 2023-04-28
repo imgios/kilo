@@ -456,7 +456,7 @@ void editorSave() {
 }
 
 void editorFindCallback(char *query, int key) {
-    if (key == '\r' || key == '\x1b')
+    if (key == '\r' || key == '\x1b') {
         return;
     }
 
