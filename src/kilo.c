@@ -455,9 +455,8 @@ void editorSave() {
     editorSetStatusMessage("Can't save! I/O error: %s", strerror(errno));
 }
 
-void editorFind() {
-    char *query = editorPrompt("Search: %s (ESC to cancel)", NULL);
-    if (query == NULL) { // Search aborted
+void editorFindCallback(char *query, int key) {
+    if (key == '\r' || key == '\x1b')
         return;
     }
 
@@ -473,8 +472,14 @@ void editorFind() {
             break;
         }
     }
+}
 
-    free(query);
+void editorFind() {
+    char *query = editorPrompt("Search: %s (ESC to cancel)", editorFindCallback);
+
+    if (query) {
+        free(query);
+    }
 }
 
 int editorReadKey() {
