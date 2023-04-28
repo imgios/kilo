@@ -36,7 +36,7 @@ enum editorKey {
 };
 
 enum editorHighlight {
-    HL_NORMAL = 0;
+    HL_NORMAL = 0,
     HL_NUMBER
 };
 
