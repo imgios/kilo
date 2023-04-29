@@ -86,10 +86,12 @@ struct abuf {
 
 char *C_HL_extensions[] = { ".c", ".h", ".cpp", NULL };
 
-struct editorSyntax HLDB[] {
-    "c",
-    C_HL_extensions,
-    HL_HIGHLIGHT_NUMBERS
+struct editorSyntax HLDB[] = {
+    {
+        "c",
+        C_HL_extensions,
+        HL_HIGHLIGHT_NUMBERS
+    }
 };
 
 #define HLDB_ENTRIES (sizeof(HLDB) / sizeof(HLDB[0]))
@@ -228,7 +230,7 @@ int getWindowSize(int *rows, int *cols) {
     }
 }
 
-void is_separator(int c) {
+int is_separator(int c) {
     return isspace(c) || c == '\0' || strchr(",.()+-/*=~%<>[];", c) != NULL;
 }
 
@@ -250,7 +252,7 @@ void editorUpdateSyntax(erow *row) {
 
         // Check if numbers should be highlighted for current filetype
         if (E.syntax->flags & HL_HIGHLIGHT_NUMBERS) {
-            if(isdigit(c) && (prev_sep || prev_hl == HL_NUMBER) || (c == "." && prev_hl == HL_NUMBER)) {
+            if((isdigit(c) && (prev_sep || prev_hl == HL_NUMBER)) || (c == "." && prev_hl == HL_NUMBER)) {
                 row->hl[i] = HL_NUMBER;
                 i++;
                 prev_sep = 0;
@@ -263,7 +265,7 @@ void editorUpdateSyntax(erow *row) {
     }
 }
 
-void editorSyntaxToColor(int hl) {
+int editorSyntaxToColor(int hl) {
     switch (hl) {
         case HL_NUMBER:
             return 31;
@@ -283,7 +285,7 @@ void editorSelectSyntaxHighlight() {
 
     char *ext = strrchr(E.filename, '.');
 
-    for (unsigned int j = 0; j < HLDB_ENTRIES, j++) {
+    for (unsigned int j = 0; j < HLDB_ENTRIES; j++) {
         struct editorSyntax *s = &HLDB[j];
         unsigned int i = 0;
         while (s->filematch[i]) {
