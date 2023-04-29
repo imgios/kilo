@@ -922,8 +922,9 @@ void editorDrawStatusBar(struct abuf *ab) {
     int len = snprintf(status, sizeof(status), "%.20s - %d lines %s",
         E.filename ? E.filename : "[No Name]", E.numrows,
         E.dirty ? "(modified)" : "");
-    // Line number
-    int rlen = snprintf(rstatus, sizeof(rstatus), "%d/%d", E.cy +1, E.numrows);
+    //
+    // Filetype and line number
+    int rlen = snprintf(rstatus, sizeof(rstatus), "%s | %d/%d", E.syntax ? E.syntax->filetype : "text", E.cy + 1, E.numrows);
     // Cut string if longer than screen size
     if (len > E.screencols) {
         len = E.screencols;
