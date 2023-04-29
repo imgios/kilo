@@ -19,6 +19,7 @@
 #define TAB_STOP 8
 #define QUIT_TIMES 3 // # of times required to quit without saving
 #define CTRL_KEY(k) ((k) & 0x1f)
+#define HL_HIGHLIGHT_NUMBERS (1<<0)
 
 // By setting the first const to 1000, the rest
 // get incrementing values of 1001/1002/1003 and so on.
@@ -39,6 +40,13 @@ enum editorHighlight {
     HL_NORMAL = 0,
     HL_NUMBER,
     HL_MATCH
+};
+
+// Store filetype syntax highlighting info
+struct editorSyntax {
+    char *filetype;
+    char **filematch;
+    int flags;
 };
 
 // Data type to store a row of text in our editor
