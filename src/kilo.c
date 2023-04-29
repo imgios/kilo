@@ -73,6 +73,7 @@ struct editorConfig {
     int dirty;
     char *filename;
     char statusmsg[80]; // Status message
+    struct editorSyntax *syntax;
     time_t statusmsg_time; // Timestamp when status message was set
 };
 
@@ -82,6 +83,16 @@ struct abuf {
     char *b;
     int len;
 };
+
+char *C_HL_extensions[] = { ".c", ".h", ".cpp", NULL };
+
+struct editorSyntax HLDB[] {
+    "c",
+    C_HL_extensions,
+    HL_HIGHLIGHT_NUMBERS
+};
+
+#define HLDB_ENTRIES (sizeof(HLDB) / sizeof(HLDB[0]))
 
 // Represents an empty buffer and acts as constructor
 #define ABUF_INIT {NULL, 0}
@@ -1027,6 +1038,7 @@ void initEditor() {
     E.filename = NULL;
     E.statusmsg[0] = '\0';
     E.statusmsg_time = 0;
+    E.syntax = NULL; // No filetype and no syntax highlight
 
     if (getWindowSize(&E.screenrows, &E.screencols) == -1) {
         die("init::getWindowSize");
