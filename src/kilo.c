@@ -262,7 +262,7 @@ void editorUpdateSyntax(erow *row) {
         // Check if it's a single line comment
         if (scs_len && !in_string) {
             if (!strncmp(&row->render[i], scs, scs_len)) {
-                memset(&row->hl[i], HL_COMMENT, row->rsize - 1);
+                memset(&row->hl[i], HL_COMMENT, row->rsize - i);
                 break;
             }
         }
