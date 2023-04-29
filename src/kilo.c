@@ -236,6 +236,11 @@ void editorUpdateSyntax(erow *row) {
     row->hl = realloc(row->hl, row->rsize);
     memset(row->hl, HL_NORMAL, row->rsize);
 
+    // No highlighting required
+    if (E.syntax == NULL) {
+        return;
+    }
+
     int prev_sep = 1;
 
     int i = 0;
@@ -243,11 +248,14 @@ void editorUpdateSyntax(erow *row) {
         char c = row->render[i];
         unsigned char prev_hl = (i > 0) ? row->hl[i - 1] : HL_NORMAL;
 
-        if(isdigit(c) && (prev_sep || prev_hl == HL_NUMBER) || (c == "." && prev_hl == HL_NUMBER)) {
-            row->hl[i] = HL_NUMBER;
-            i++;
-            prev_sep = 0;
-            continue;
+        // Check if numbers should be highlighted for current filetype
+        if (E.syntax->flags & HL_HIGHLIGHT_NUMBERS) {
+            if(isdigit(c) && (prev_sep || prev_hl == HL_NUMBER) || (c == "." && prev_hl == HL_NUMBER)) {
+                row->hl[i] = HL_NUMBER;
+                i++;
+                prev_sep = 0;
+                continue;
+            }
         }
 
         prev_sep = is_separator(c);
@@ -263,6 +271,31 @@ void editorSyntaxToColor(int hl) {
             return 34;
         default:
             return 37;
+    }
+}
+
+void editorSelectSyntaxHighlight() {
+    E.syntax = NULL;
+    // New file
+    if (E.filename == NULL) {
+        return;
+    }
+
+    char *ext = strrchr(E.filename, '.');
+
+    for (unsigned int j = 0; j < HLDB_ENTRIES, j++) {
+        struct editorSyntax *s = &HLDB[j];
+        unsigned int i = 0;
+        while (s->filematch[i]) {
+            int is_ext = (s->filematch[i][0] == '.');
+            // strrchr() returns a pointer to the last occurence of the . in the filename
+            // strcmp() returns 0 if two strings are equal
+            if ((is_ext && ext && !strcmp(ext, s->filematch[i])) || (!is_ext && strstr(E.filename, s->filematch[i]))) {
+                E.syntax = s;
+                return;
+            }
+            i++;
+        }
     }
 }
 
@@ -922,7 +955,6 @@ void editorDrawStatusBar(struct abuf *ab) {
     int len = snprintf(status, sizeof(status), "%.20s - %d lines %s",
         E.filename ? E.filename : "[No Name]", E.numrows,
         E.dirty ? "(modified)" : "");
-    //
     // Filetype and line number
     int rlen = snprintf(rstatus, sizeof(rstatus), "%s | %d/%d", E.syntax ? E.syntax->filetype : "text", E.cy + 1, E.numrows);
     // Cut string if longer than screen size
