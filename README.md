@@ -15,7 +15,7 @@
 
 Clone the repostiory and compile it:
 
-- Using `make`: run `make` in the main project directory
+- Using `make`: run `make` in the src/ project directory
 - Using C compiler: `cc kilo.c -o kilo`
 
-Then run `kilo`.
+Then run `./kilo [<filename>]`.
