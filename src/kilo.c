@@ -337,7 +337,7 @@ void editorUpdateSyntax(erow *row) {
         }
         // Check if numbers should be highlighted for current filetype
         if (E.syntax->flags & HL_HIGHLIGHT_NUMBERS) {
-            if((isdigit(c) && (prev_sep || prev_hl == HL_NUMBER)) || (c == "." && prev_hl == HL_NUMBER)) {
+            if((isdigit(c) && (prev_sep || prev_hl == HL_NUMBER)) || (c == '.' && prev_hl == HL_NUMBER)) {
                 row->hl[i] = HL_NUMBER;
                 i++;
                 prev_sep = 0;
@@ -507,7 +507,7 @@ void editorInsertRow(int at, char *s, size_t len) {
     E.row[at].rsize = 0;
     E.row[at].render = NULL;
     E.row[at].hl = NULL;
-    E.row[at].hl_open_comment = NULL;
+    E.row[at].hl_open_comment = 0;
     editorUpdateRow(&E.row[at]);
 
     E.numrows++;
